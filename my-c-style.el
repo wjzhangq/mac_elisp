@@ -20,6 +20,13 @@ Suitable for inclusion in `c-offsets-alist'."
   (vector (+ (* 2 c-basic-offset)
              (elt (my-c-lineup-to-previous-line langelem) 0))))
 
+;;  to do: php arglist-intro
+;;  array init is taken as arglist-intro
+;;     $a = array(
+;;             'xx' => 'x',
+;;                );
+;;  don't indent++ for this statements, and closing ')' of `arglist-close'
+;;  should indent to start-col
 (defun my-php-lineup-argcon (langelem)
   "Indent + for function, while ++ for condition"
   (save-excursion
@@ -32,11 +39,46 @@ Suitable for inclusion in `c-offsets-alist'."
         (vector (+ start-col c-basic-offset))))
     ))
 
+(defun my-php-defun-close (langelem)
+  "Set proper indent for closing '}'.
+
+when a function is defined at the very beginning of a file, default indent is
+strange, for following php code:
+
+<?php
+function func($arg) {
+	echo $arg;
+  }
+
+`c-show-syntatic-information' show that syntactic analysis is:
+  ((defun-close 3))
+and we get a strange indent 2, so we need to force it to 0 for such situation,
+if word at start-col is not `function', `priviate', `public' or `protected'"
+  (save-excursion
+    (let ((start-col (c-langelem-col c-syntactic-element))
+          (start-pos (c-langelem-pos c-syntactic-element)))
+      (goto-char start-pos)
+      (if (or (equal "function" (current-word)) (equal "priviate" (current-word))
+              (equal "public" (current-word)) (equal "protected" (current-word))
+              )
+          (vector start-col)
+        (vector 0)))
+    ))
+
+(defun my-snug-class-close (syntax pos)
+  "Dynamically calculation brace hanginess for class-close.
+For c-mode and c++-mode, class (include struct and c++ class) need end
+with `;', so just insert newline before close brace, while in other mode,
+insert newline both before and after close brace."
+  (if (or (equal "c-mode" (prin1-to-string major-mode))
+          (equal "c++-mode" (prin1-to-string major-mode)))
+      '(before)
+    '(before after)))
 
 (defconst my-c-style
   `(;;"gnu"
     ;; show syntactic context to help me understand indentation calculation
-    (c-echo-syntactic-information-p t)
+    ;; (c-echo-syntactic-information-p t)
     (c-recognize-knr-p . nil)
     (c-enable-xemacs-performance-kludge-p . t) ; speed up indentation in XEmacs
     (c-basic-offset . 2)
@@ -49,7 +91,8 @@ Suitable for inclusion in `c-offsets-alist'."
     (c-hanging-braces-alist . ((defun-open after)
                                (defun-close before after)
                                (class-open after)
-                               (class-close before after)
+                               (class-close . my-snug-class-close)
+                               ;; (class-close before after)
                                (namespace-open after)
                                (inline-open after)
                                (inline-close before after)
