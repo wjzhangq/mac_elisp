@@ -2,7 +2,7 @@
 
 ;;; personal site lisp
 (add-to-list 'load-path
-             (expand-file-name "~/.emacs.d/site-lisp"))
+             (expand-file-name "~/.emacs.d/lisp"))
 
 ;;; my own lisp
 (add-to-list 'load-path
@@ -17,7 +17,7 @@
       (concat  "%b - emacs@" (system-name)))
 
 (setq x-select-enable-clipboard t)
-(scroll-bar-mode nil)
+;; (scroll-bar-mode nil)
 
 ;;; default to unified diffs
 (setq diff-switches "-u")
@@ -27,7 +27,7 @@
 
 ;;; uncomment for CJK utf-8 support for non-Asian users
 ;; (require 'un-define)
-(utf-translate-cjk-load-tables)
+;; (utf-translate-cjk-load-tables)
 
 ;;; expand tab to space
 (setq-default indent-tabs-mode nil)
@@ -59,7 +59,7 @@
 
 ;;; disable menu bar and tool bar
 (menu-bar-mode 0)
-(tool-bar-mode 0)
+;; (tool-bar-mode 0)
 
 (iswitchb-mode t)
 
@@ -201,11 +201,11 @@ Variant of `zap-to-char'."
 ;;; setting when emacs in X window
 (if (equal t (framep (selected-frame)))
     (message "gui not started")
-  (global-set-key [mouse-1] nil)
-  (global-set-key [down-mouse-1] nil)
-  (global-set-key [double-mouse-1] nil)
-  (global-set-key [mouse-2] nil)
-  (global-set-key [down-mouse-2] nil)
+  ;; (global-set-key [mouse-1] nil)
+  ;; (global-set-key [down-mouse-1] nil)
+  ;; (global-set-key [double-mouse-1] nil)
+  ;; (global-set-key [mouse-2] nil)
+  ;; (global-set-key [down-mouse-2] nil)
   (set-foreground-color "white")
   (set-background-color "black")
   (setq default-frame-alist
@@ -215,8 +215,8 @@ Variant of `zap-to-char'."
           (height . 50)
           (width . 120)
           ))
-  (require 'my-font)
-  (my-set-font)
+  ;; (require 'my-font)
+  ;; (my-set-font)
   )
 
 (require 'compile)
@@ -245,6 +245,11 @@ Variant of `zap-to-char'."
 (add-hook 'sh-mode-hook
           '(lambda ()
              (setq sh-basic-offset 2)))
+
+(autoload 'php-mode "php-mode" "Major mode for editing PHP code." t)
+
+(add-to-list 'auto-mode-alist
+                  '("\\.php[34]\\'\\|\\.php\\'\\|\\.phtml\\'" . php-mode))
 
 ;;; syntax check for php file upon save buffer
 ;;; TODO: bind to compilation mode to locate error quickly
@@ -335,19 +340,9 @@ Variant of `zap-to-char'."
 (add-hook 'php-mode-hook 'hs-minor-mode)
 
 
-;; sdcv
-(require 'sdcv-mode)
-(global-set-key (kbd "C-c d") 'sdcv-search)
-
-(require 'actionscript-mode)
-(add-hook 'actionscript-mode-hook
-          '(lambda()
-             (setq standard-indent 2) ))
-(setq auto-mode-alist
-   (cons '("\\.as" . actionscript-mode) auto-mode-alist))
 
 ;; tail-file
-(require 'tail)
+;; (require 'tail)
 
 ;; nxhtml (horrible face in terminal)
 ;; (if (file-readable-p "/home/carleo/tools/nxhtml/autostart.el")
@@ -399,15 +394,6 @@ Variant of `zap-to-char'."
 (global-set-key "\C-c/" 'dabbrev-completion)
 ;; (global-set-key "\C-\M-/" 'dabbrev-completion)
 
-;;; column highlight
-(require 'col-highlight)
-(defun my-toggle-col-highlight()
-  "toggle highlight current column"
-  (interactive)
-  (column-highlight-mode)
-  )
-(global-set-key "\C-ccc" 'my-toggle-col-highlight)
-
     
 ;;; skeleton-pair-insert
 (setq skeleton-pair t)
@@ -442,19 +428,6 @@ Variant of `zap-to-char'."
 
 
 
-(require 'javascript-mode)
-(add-to-list 'auto-mode-alist '("\\.js" . javascript-mode))
-(add-hook 'javascript-mode-hook
-          '(lambda()
-             (setq javascript-indent-level 4)
-             (setq tab-width 4)
-             (setq indent-tabs-mode t)
-             ))
-
-(require 'hide-region)
-;; (global-set-key [(control o)(r)(h)] 'hide-region-hide)
-;; (global-set-key [(control o)(r)(s)] 'hide-region-show)
-
 (defun my-kill-line()
   "kill whole line if there is only spaces before point"
   (interactive)
@@ -474,70 +447,3 @@ Variant of `zap-to-char'."
   (kill-line))
 (global-set-key "\C-k" 'my-kill-line)
 
-(global-set-key [(control tab)] 'hippie-expand)
-
-;;; gnuserv --- disabled, as emacsserver/emacsclient can do this
-;; (require 'gnuserv-compat)
-;; (gnuserv-start)
-;; (autoload 'gnuserv-start "gnuserv-compat"
-;;  "Allow this Emacs process to be a server for client processes."
-;;  t)
-
-;;; Eim
-(add-to-list 'load-path (expand-file-name "~/tools/eim-2.4"))
-(autoload 'eim-use-package "eim" "Another emacs input method")
-(setq eim-use-tooltip nil)
-(register-input-method
- "eim-py" "euc-cn" 'eim-use-package
- "拼音" "汉字拼音输入法" "py.txt")
-;; 用 ; 暂时输入英文
-;; (require 'eim-extra)
-;; (global-set-key ";" 'eim-insert-ascii)
-
-
-(unless t
-
-(load-file "/home/carleo/tools/cedet/common/cedet.el")
-(setq-default semanticdb-default-save-directory
-              (expand-file-name "~/.semanticdb"))
-(semantic-load-enable-excessive-code-helpers)
-(semantic-load-enable-semantic-debugging-helpers)
-(require 'semantic-ia)
-(require 'semantic-gcc)
-(global-semanticdb-minor-mode 1)
-(global-semantic-tag-folding-mode 1)
-;; (global-semantic-highlight-edits-mode 1)
-
-;; (setq qt4-base-dir "/usr/include")
-;; ;; (semantic-add-system-include qt4-base-dir 'c++-mode)
-;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file (concat qt4-base-dir "/Qt/qconfig.h"))
-;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file (concat qt4-base-dir "/Qt/qconfig-dist.h"))
-;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file (concat qt4-base-dir "/Qt/qglobal.h"))
-
-;; (semantic-add-system-include (concat qt4-base-dir "/Qt") 'c++-mode)
-;; (semantic-add-system-include (concat qt4-base-dir "/QtCore") 'c++-mode)
-;; (semantic-add-system-include (concat qt4-base-dir "/QtGui") 'c++-mode)
-;; (semantic-add-system-include (concat qt4-base-dir "/QtUiTools") 'c++-mode)
-;; (add-to-list 'auto-mode-alist (cons (concat qt4-base-dir "/Qt") 'c++-mode))
-;; (add-to-list 'auto-mode-alist (cons (concat qt4-base-dir "/QtCore") 'c++-mode))
-;; (add-to-list 'auto-mode-alist (cons (concat qt4-base-dir "/QtGui") 'c++-mode))
-;; (add-to-list 'auto-mode-alist (cons (concat qt4-base-dir "/QtUiTools") 'c++-mode))
-
-(autoload 'senator-try-expand-semantic "senator")
-(setq hippie-expand-try-functions-list
-      '(
-        senator-try-expand-semantic
-        try-expand-dabbrev
-        try-expand-dabbrev-visible
-        try-expand-dabbrev-all-buffers
-        try-expand-dabbrev-from-kill
-        try-expand-list
-        try-expand-list-all-buffers
-        try-expand-line
-        try-expand-line-all-buffers
-        try-complete-file-name-partially
-        try-complete-file-name
-        try-expand-whole-kill
-        )
-)
-) ;;; unless
