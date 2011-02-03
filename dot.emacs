@@ -18,6 +18,7 @@
 
 (setq x-select-enable-clipboard t)
 ;; (scroll-bar-mode nil)
+(scroll-bar-mode nil)
 
 ;;; default to unified diffs
 (setq diff-switches "-u")
@@ -305,7 +306,7 @@ Variant of `zap-to-char'."
              (setq comment-start "// ")
              (setq comment-end "")
              (setq php-completion-file 
-                   (expand-file-name "~/doc/php_manual/php_func_file"))
+                   (expand-file-name "~/elisp/php/php-completion-file"))
              (local-set-key "\C-ccp" 'php-complete-function)
              ;;; need to line-up
              (c-set-offset 'arglist-cont-nonempty 'my-php-lineup-argcon)
@@ -447,3 +448,21 @@ Variant of `zap-to-char'."
   (kill-line))
 (global-set-key "\C-k" 'my-kill-line)
 
+(defun my-run-current-file()
+  (interactive)
+  (let* (
+        (ext-map
+         '(
+           ("py" . "python")
+           ("sh" . "bash")
+           ("php" . "php")
+           )
+         )
+        (file-name (buffer-file-name))
+        (file-ext (file-name-extension file-name))
+        (prog-name (cdr (assoc file-ext ext-map)))
+        (cmd-str (concat prog-name " " file-name))
+        )
+    (shell-command cmd-str)
+    ))
+(global-set-key "\C-cp" 'my-run-current-file)
