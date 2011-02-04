@@ -18,7 +18,7 @@
 
 (setq x-select-enable-clipboard t)
 ;; (scroll-bar-mode nil)
-(scroll-bar-mode nil)
+(if (boundp 'scroll-bar-mode) (scroll-bar-mode nil))
 
 ;;; default to unified diffs
 (setq diff-switches "-u")
@@ -60,7 +60,7 @@
 
 ;;; disable menu bar and tool bar
 (menu-bar-mode 0)
-;; (tool-bar-mode 0)
+(if (boundp 'tool-bar-mode) (tool-bar-mode 0))
 
 (iswitchb-mode t)
 
